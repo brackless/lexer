@@ -1,0 +1,22 @@
+; Primitives
+; Number
+100
+3.14
+3e-5
+1_000_000
+
+; Boolean
+true
+false
+
+; String
+"foo"
+
+; Expressions
+; Single line
+def foo 12 bar 50
+
+; Multi line (comma at the end of line neutralizes following new line character for lexer)
+def a 12,
+    b "hello",
+    c true
