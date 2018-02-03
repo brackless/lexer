@@ -21,7 +21,6 @@ export type PunctuatorToken = {|
   kind: PunctuatorKind,
 |};
 
-
 export type Token = ValueToken | SymbolToken | IndentToken | PunctuatorToken;
 
 export const value = (value: any): ValueToken => ({ type: 'Value', value });

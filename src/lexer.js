@@ -6,22 +6,31 @@ const CHAR_NEW_LINE = '\n';
 const CHAR_TAB = '\t';
 const CHAR_SPACE = ' ';
 const CHAR_DOUBLE_QUOTE = '"';
+const CHAR_LEFT_PAREN = '(';
+const CHAR_RIGHT_PAREN = ')';
+const CHAR_LEFT_SQUARE_PAREN = '[';
+const CHAR_RIGHT_SQUARE_PAREN = ']';
+
 // const CHAR_BACKSLASH = '\\';
+const delimiterChars = new Set([
+  CHAR_SPACE,
+  CHAR_TAB,
+]);
 
 const indentChars = new Set([
   CHAR_SPACE,
   CHAR_TAB,
 ]);
-// const delimiters = new Set([
-//   DELIMITER_NEW_LINE,
-//   DELIMITER_TAB,
-//   DELIMITER_SPACE,
-// ]);
+
 const punctuatorChars = new Set([
   CHAR_SPACE,
   CHAR_TAB,
   CHAR_NEW_LINE,
   CHAR_DOUBLE_QUOTE,
+  CHAR_LEFT_PAREN,
+  CHAR_RIGHT_PAREN,
+  CHAR_LEFT_SQUARE_PAREN,
+  CHAR_RIGHT_SQUARE_PAREN,
 ]);
 
 const lex = (code: string): any[] => {
@@ -50,6 +59,7 @@ const lex = (code: string): any[] => {
 
     while (!isEOF()) {
       if (current() === CHAR_DOUBLE_QUOTE) {
+        next();
         return [...input, value(buffer)];
       }
       buffer += current();
@@ -88,6 +98,17 @@ const lex = (code: string): any[] => {
     return size > 0 ? [...input, indent(size)] : input;
   };
 
+  const readPunctuator = (input: Token[]): Token[] => {
+    const char = current();
+    next();
+    switch (char) {
+      case CHAR_NEW_LINE:
+        return [...input, punctuator('NewLine')];
+      default:
+        return input;
+    }
+  };
+
   const readLine = (input: Token[]): Token[] => {
     let output = readIndent(input);
 
@@ -95,17 +116,13 @@ const lex = (code: string): any[] => {
       if (current() === CHAR_NEW_LINE) {
         next();
         return [...output, punctuator('NewLine')];
-      }
-
-      if (current() === CHAR_DOUBLE_QUOTE) {
+      } else if (current() === CHAR_DOUBLE_QUOTE) {
         next();
         output = readString(output);
-      }
-
-      if (!punctuatorChars.has(current())) {
-        output = readSymbol(output);
+      } else if (punctuatorChars.has(current())) {
+        output = readPunctuator(output);
       } else {
-        next();
+        output = readSymbol(output);
       }
     }
 
