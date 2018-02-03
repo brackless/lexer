@@ -39,4 +39,9 @@ test('Read symbols', () => {
   expect(lex('foo')).toEqual([
     { type: 'Symbol', name: 'foo' },
   ]);
+
+  expect(lex('foo bar')).toEqual([
+    { type: 'Symbol', name: 'foo' },
+    { type: 'Symbol', name: 'bar' },
+  ]);
 });
