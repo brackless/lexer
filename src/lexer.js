@@ -11,21 +11,21 @@ const lex = (code: string): any[] => {
   let column = 0;
   let position = 0;
 
-  const newError = (message: string) =>
-    new Error(`${message} at line ${line}, column ${column}`);
-
   const current = () => code[position];
   const next = () => {
-    position += 1;
-
     if (current() === DELIMITER_NEW_LINE) {
       line += 1;
       column = 0;
     } else {
       column += 1;
     }
+
+    position += 1;
   };
   const isEOF = () => position >= code.length;
+
+  const newError = (message: string) =>
+    new Error(`${message} at line ${line}, column ${column}`);
 
   const readString = () => {
     let buffer = '';
