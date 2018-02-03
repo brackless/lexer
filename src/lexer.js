@@ -1,13 +1,12 @@
 // @flow
-import { value, indent, punctuator } from './lexemes';
+import { value, symbol, indent, punctuator } from './lexemes';
 import type { Token } from './lexemes';
 
 const CHAR_NEW_LINE = '\n';
 const CHAR_TAB = '\t';
 const CHAR_SPACE = ' ';
-
 const CHAR_DOUBLE_QUOTE = '"';
-// const PUNCTUATOR_BACKSLASH = '\\';
+// const CHAR_BACKSLASH = '\\';
 
 const indentChars = new Set([
   CHAR_SPACE,
@@ -18,6 +17,12 @@ const indentChars = new Set([
 //   DELIMITER_TAB,
 //   DELIMITER_SPACE,
 // ]);
+const punctuatorChars = new Set([
+  CHAR_SPACE,
+  CHAR_TAB,
+  CHAR_NEW_LINE,
+  CHAR_DOUBLE_QUOTE,
+]);
 
 const lex = (code: string): any[] => {
   let line = 0;
@@ -54,6 +59,20 @@ const lex = (code: string): any[] => {
     throw newError('Unclosed string literal');
   };
 
+  const readSymbol = (input: Token[]): Token[] => {
+    let buffer = '';
+
+    while (!isEOF()) {
+      if (punctuatorChars.has(current())) {
+        break;
+      }
+      buffer += current();
+      next();
+    }
+
+    return [...input, symbol(buffer)]
+  };
+
   const readIndent = (input: Token[]): Token[] => {
     let size = 0;
 
@@ -83,7 +102,11 @@ const lex = (code: string): any[] => {
         output = readString(output);
       }
 
-      next();
+      if (!punctuatorChars.has(current())) {
+        output = readSymbol(output);
+      } else {
+        next();
+      }
     }
 
     return output;
