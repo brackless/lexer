@@ -1,4 +1,15 @@
 // @flow
-export const value = (v: any) => ({ type: 'Value', value: v });
+export type Token = {|
+  type: 'Value' | 'Indent' | 'Punctuator',
+  value: any,
+|};
 
-export default { value };
+export type PunctuatorValue = 'NewLine';
+
+export const value = (value: any): Token => ({ type: 'Value', value });
+
+export const indent = (size: number): Token => ({ type: 'Indent', value: size });
+
+export const punctuator = (type: PunctuatorValue): Token => ({ type: 'Punctuator', value: type });
+
+export default { value, indent, punctuator };
